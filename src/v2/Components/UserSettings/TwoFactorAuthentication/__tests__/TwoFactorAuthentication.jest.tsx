@@ -14,7 +14,9 @@ import {
   CreateBackupSecondFactorsMutationSuccessResponse,
   CreateSmsSecondFactorMutationSuccessResponse,
   DeliverSmsSecondFactorMutationSuccessResponse,
+  EnableAppSecondFactorMutationErrorResponse,
   EnableAppSecondFactorMutationSuccessResponse,
+  EnableSmsSecondFactorMutationInvalidResponse,
   EnableSmsSecondFactorMutationSuccessResponse,
   UpdateAppSecondFactorMutationSuccessResponse,
   UpdateSmsSecondFactorMutationSuccessResponse,
@@ -85,6 +87,27 @@ describe("TwoFactorAuthentication ", () => {
 
       await page.clickAppSetupButton()
     })
+
+    it("renders error upon failure to enable app factor", async done => {
+      const env = setupTestEnv()
+      const page = await env.buildPage()
+
+      env.mutations.useResultsOnce(CreateAppSecondFactorMutationSuccessResponse)
+      env.mutations.useResultsOnce(UpdateAppSecondFactorMutationSuccessResponse)
+      env.mutations.useResultsOnce(EnableAppSecondFactorMutationErrorResponse)
+
+      await page.clickAppSetupButton()
+      await page.enterPassword('foo')
+
+      setTimeout(() => {
+        const modal = page.find("AppSecondFactor").find("Modal").filterWhere(modal => {
+          // console.log(modal.text())
+          return modal.text().includes("Turn on")
+        })
+        expect(modal.text()).toContain("Unable to enable factor.")
+        done()
+      })
+    })
   })
 
   describe("SmsSecondFactor", () => {
@@ -107,6 +130,26 @@ describe("TwoFactorAuthentication ", () => {
       env.mutations.useResultsOnce(EnableSmsSecondFactorMutationSuccessResponse)
 
       await page.clickSmsSetupButton()
+    })
+
+    it("renders error upon failure to enable SMS factor", async done => {
+      const env = setupTestEnv()
+      const page = await env.buildPage()
+
+      env.mutations.useResultsOnce(CreateSmsSecondFactorMutationSuccessResponse)
+      env.mutations.useResultsOnce(
+        DeliverSmsSecondFactorMutationSuccessResponse
+      )
+      env.mutations.useResultsOnce(UpdateSmsSecondFactorMutationSuccessResponse)
+      env.mutations.useResultsOnce(EnableSmsSecondFactorMutationInvalidResponse)
+
+      await page.clickSmsSetupButton()
+
+      setTimeout(() => {
+        const modal = page.smsModal
+        expect(modal.text()).toContain("Unable to enable factor.")
+        done()
+      })
     })
   })
 

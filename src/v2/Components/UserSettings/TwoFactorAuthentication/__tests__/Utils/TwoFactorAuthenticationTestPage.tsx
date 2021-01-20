@@ -1,3 +1,4 @@
+import { PasswordInput } from "v2/Components/PasswordInput"
 import { RootTestPage, expectOne } from "v2/DevTools/RootTestPage"
 
 export class TwoFactorAuthenticationTestPage extends RootTestPage {
@@ -41,6 +42,10 @@ export class TwoFactorAuthenticationTestPage extends RootTestPage {
     )
   }
 
+  get passwordConfirmButton() {
+    return expectOne(this.find("AppSecondFactor").find("Button").filterWhere(btn => btn.text().includes("Confirm")))
+  }
+
   get backupModal() {
     return expectOne(this.find("BackupSecondFactor").find("Modal"))
   }
@@ -51,6 +56,17 @@ export class TwoFactorAuthenticationTestPage extends RootTestPage {
         .find("Button")
         .filterWhere(btn => btn.text().includes("Done"))
     )
+  }
+
+  get smsModal() {
+    return expectOne(
+      this.find("SmsSecondFactor").find("Modal")
+        .filterWhere(modal => modal.text().includes("Turn on"))
+    )
+  }
+
+  get passwordInput() {
+    return expectOne(this.find(PasswordInput))
   }
 
   async clickAppSetupButton() {
@@ -82,4 +98,12 @@ export class TwoFactorAuthenticationTestPage extends RootTestPage {
     this.backupRegenerateButton.simulate("click")
     await this.update()
   }
+
+  async enterPassword(password: string) {
+    console.dir(this.passwordInput)
+    this.passwordInput.props().onChange(password)
+    this.passwordConfirmButton.simulate("click")
+    await this.update()
+  }
+
 }

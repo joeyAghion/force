@@ -1,4 +1,5 @@
 import { BackupSecondFactorModalContentQueryRawResponse } from "v2/__generated__/BackupSecondFactorModalContentQuery.graphql"
+import { ConfirmPasswordMutationResponse } from "v2/__generated__/ConfirmPasswordMutation.graphql"
 import { CreateAppSecondFactorMutationResponse } from "v2/__generated__/CreateAppSecondFactorMutation.graphql"
 import { CreateBackupSecondFactorsMutationResponse } from "v2/__generated__/CreateBackupSecondFactorsMutation.graphql"
 import { CreateSmsSecondFactorMutationResponse } from "v2/__generated__/CreateSmsSecondFactorMutation.graphql"
@@ -179,10 +180,44 @@ export const EnableSmsSecondFactorMutationErrorResponse: EnableSecondFactorMutat
   },
 }
 
+export const EnableAppSecondFactorMutationErrorResponse: EnableSecondFactorMutationResponse = {
+  enableSecondFactor: {
+    secondFactorOrErrors: {
+      __typename: "Errors",
+      errors: [
+        {
+          code: "invalid",
+          message:
+            "Unable to enable factor. Validation failed: 2FA cannot be enabled if account has third-party authentication active",
+        },
+      ],
+    },
+  },
+}
+
+export const EnableSmsSecondFactorMutationInvalidResponse: EnableSecondFactorMutationResponse = {
+  enableSecondFactor: {
+    secondFactorOrErrors: {
+      __typename: "Errors",
+      errors: [
+        {
+          code: "invalid",
+          message:
+            "Unable to enable factor. Validation failed: 2FA cannot be enabled if account has third-party authentication active",
+        },
+      ],
+    },
+  },
+}
+
 export const DisableSecondFactorMutationSuccessResponse: DisableSecondFactorMutationResponse = {
   disableSecondFactor: {
     secondFactorOrErrors: {
       __typename: "AppSecondFactor",
     },
   },
+}
+
+export const ConfirmPasswordMutationSuccessResponse: ConfirmPasswordMutationResponse = {
+  confirmPassword: { valid: true }
 }
